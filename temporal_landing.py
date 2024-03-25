@@ -29,4 +29,4 @@ class HadoopManager:
 
 if __name__ == '__main__':
     hadoop_manager = HadoopManager(namenode='10.4.41.45', port='9870', user='bdm')
-    hadoop_manager.upload_folder(r'.\data', r'/user/bdm')
+    #hadoop_manager.upload_folder(r'.\data', r'/user/bdm')
