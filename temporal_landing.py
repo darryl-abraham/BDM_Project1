@@ -1,6 +1,7 @@
 from hdfs import InsecureClient
 import os
 
+
 class DataCollector:
     """
     Data collector class to collect data from any source directory and store in HDFS
@@ -22,12 +23,12 @@ class DataCollector:
             self.client.upload(hdfs_path, local_path, overwrite=True)
             print(f"Uploaded file: {local_path.split('/')[-1]} to HDFS: {hdfs_path}")
         else:
-            print(f"File {local_path.split('/')[-1]} already exists in HDFS: {hdfs_path}")
+            print(f"File: {local_path.split('/')[-1]} already exists in HDFS: {hdfs_path}")
 
     def upload_folder(self, local_dir, hdfs_target_dir):
         """
         Upload a data folder to HDFS
-        :param local_dir: folder path to data
+        :param local_dir: path to folder (with data) to be uploaded
         :param hdfs_target_dir: target directory to upload to in HDFS
         :return: None
         """
@@ -37,23 +38,24 @@ class DataCollector:
                     self.client.makedirs(hdfs_target_dir + "/" + item)
                     print(f"Created folder: {item} in HDFS: {hdfs_target_dir}")
                 else:
-                    print(f"Folder {item} already exists in HDFS: {hdfs_target_dir}")
+                    print(f"Folder: {item} already exists in HDFS: {hdfs_target_dir}")
                 self.upload_folder(os.path.join(local_dir, item), hdfs_target_dir + "/" + item)
             elif os.path.isfile(os.path.join(local_dir, item)):
                 self.upload_file(os.path.join(local_dir, item), hdfs_target_dir)
 
-    def nuke(self, hdfs_target_dir='/bdm'):
+    def nuke(self, hdfs_target_dir='/user/bdm'):
         """
-        Delete all
+        Delete all files and subfolders in a given directory
         :param hdfs_target_dir: directory to delete
         :return: None
         """
         self.client.delete(hdfs_target_dir, recursive=True)
-        if hdfs_target_dir == '/bdm':
+        if hdfs_target_dir == '/user/bdm':
             self.client.makedirs('/user/bdm')
         print(f"Directory {hdfs_target_dir} nuked")
 
+
 if __name__ == '__main__':
     data_collector = DataCollector(namenode='10.4.41.45', port='9870', user='bdm')
-    data_collector.upload_folder(r'.\data', r'/user/bdm')
-    #hadoop_manager.nuke()
+    data_collector.upload_folder('./data', r'/user/bdm/data_temporal')
+    #data_collector.nuke()
