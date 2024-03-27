@@ -57,5 +57,5 @@ class DataCollector:
 
 if __name__ == '__main__':
     data_collector = DataCollector(namenode='10.4.41.45', port='9870', user='bdm')
-    data_collector.upload_folder('./data', r'/user/bdm/data_temporal')
-    #data_collector.nuke()
+    data_collector.upload_folder('./data', './data_temporal')
+    #data_collector.nuke('./data_persistent/opendatabcn-income')
