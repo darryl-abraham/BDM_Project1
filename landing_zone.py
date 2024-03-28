@@ -3,8 +3,7 @@ from persistent_landing import DataPersistenceLoader
 from hdfs import InsecureClient
 
 # HDFS client config
-namenode = '10.4.41.45'
-port = '9870'
+url = 'http://10.4.41.45:9870'
 user = 'bdm'
 
 # Data collector
@@ -47,7 +46,7 @@ class LandingZone:
 
 
 if __name__ == '__main__':
-    landing_zone = LandingZone('http://10.4.41.45:9870', 'bdm')
+    landing_zone = LandingZone(url, user)
     # landing_zone.nuke()  # uncomment to delete all files and run entire landing zone again
     landing_zone.run(local_dir, hdfs_target_dir)
     # landing_zone.nuke(temp_data_dir)  # uncomment to delete all temporal data
