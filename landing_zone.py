@@ -6,17 +6,9 @@ from hdfs import InsecureClient
 import time
 import sys
 
-# HDFS client
+# HDFS client configuration
 url = 'http://10.4.41.45:9870'
 user = 'bdm'
-
-# Data collector
-local_dir = './data'
-hdfs_target_dir = './data_temporal'
-
-# Data persistor
-temp_data_dir = './data_temporal'  # by default set to ./data_temporal
-
 
 class LandingZone:
 
@@ -27,16 +19,18 @@ class LandingZone:
         self.data_collector = DataCollector(self.client)
         self.data_persistor = DataPersistenceLoader(self.client)
 
-    def run(self, local_dir, temp_data_dir_hdfs, compression=None, drop=False):
+    def run(self, local_dir, temp_data_dir, compression=None, drop=False):
         """
         Run full data landing zone process
         :param local_dir: local directory to upload to HDFS
         :param hdfs_target_dir: target directory in HDFS
         :return:
         """
-        self.data_collector.upload_folder(local_dir, hdfs_target_dir)
-        self.data_persistor.persist(temp_data_dir_hdfs, compression=compression, drop=drop)
-
+        self.data_collector.upload_folder(local_dir, temp_data_dir)
+        self.data_persistor.persist(temp_data_dir, compression=compression, drop=drop)
+        if drop == 'False' or drop == 'false' or drop == 'f':
+            landing_zone.client.rename(temp_data_dir, temp_data_dir + "_temporal")
+            print(f"{temp_data_dir} renamed to {temp_data_dir}_temporal")
 
 if __name__ == '__main__':
     start = time.time()
@@ -62,10 +56,10 @@ if __name__ == '__main__':
         landing_zone.data_persistor.persist(dir, compression, drop)
     elif sys.argv[3] == 'execute':
         local_dir = sys.argv[4]
-        hdfs_target_dir = sys.argv[5]
+        temp_data_dir = sys.argv[5]
         compression = sys.argv[6]
         drop = sys.argv[7]
-        landing_zone.run(local_dir, hdfs_target_dir, compression, drop)
+        landing_zone.run(local_dir, temp_data_dir, compression, drop)
         end = time.time()
         print(f"Landing zone process completed in {end - start} seconds")
         sys.exit(0)
