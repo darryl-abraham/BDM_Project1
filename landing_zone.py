@@ -1,8 +1,12 @@
+import os.path
+
 from temporal_landing import DataCollector
 from persistent_landing import DataPersistenceLoader
 from hdfs import InsecureClient
+import time
+import sys
 
-# HDFS client config
+# HDFS client
 url = 'http://10.4.41.45:9870'
 user = 'bdm'
 
@@ -23,7 +27,7 @@ class LandingZone:
         self.data_collector = DataCollector(self.client)
         self.data_persistor = DataPersistenceLoader(self.client)
 
-    def run(self, local_dir, hdfs_target_dir):
+    def run(self, local_dir, temp_data_dir_hdfs, compression=None, drop=False):
         """
         Run full data landing zone process
         :param local_dir: local directory to upload to HDFS
@@ -31,23 +35,38 @@ class LandingZone:
         :return:
         """
         self.data_collector.upload_folder(local_dir, hdfs_target_dir)
-        self.data_persistor.persist()
-
-    def nuke(self, hdfs_target_dir='/user/bdm'):
-        """
-        Delete all files and subfolders in a given directory
-        :param hdfs_target_dir: directory to delete
-        :return: None
-        """
-        self.client.delete(hdfs_target_dir, recursive=True)
-        if hdfs_target_dir == '/user/bdm':
-            self.client.makedirs('/user/bdm')
-        print(f"Directory {hdfs_target_dir} nuked")
+        self.data_persistor.persist(temp_data_dir_hdfs, compression=compression, drop=drop)
 
 
 if __name__ == '__main__':
+    start = time.time()
+    url = sys.argv[1]
+    user = sys.argv[2]
     landing_zone = LandingZone(url, user)
-    # landing_zone.nuke()  # uncomment to delete all files and run entire landing zone again
-    landing_zone.run(local_dir, hdfs_target_dir)
-    # landing_zone.nuke(temp_data_dir)  # uncomment to delete all temporal data
+    if sys.argv[3] == 'drop':
+        dir = sys.argv[4]
+        landing_zone.data_persistor.drop(dir)
+        sys.exit(0)
+    elif sys.argv[3] == 'upload':
+        local_item = sys.argv[4]
+        hdfs_target_dir = sys.argv[5]
+        if os.path.isdir(local_item):
+            landing_zone.data_collector.upload_folder(local_item, hdfs_target_dir)
+        else:
+            print(f"Error: {local_item} is not a valid directory")
+        sys.exit(0)
+    elif sys.argv[3] == 'persist':
+        dir = sys.argv[4]
+        compression = sys.argv[5]
+        drop = sys.argv[6]
+        landing_zone.data_persistor.persist(dir, compression, drop)
+    elif sys.argv[3] == 'execute':
+        local_dir = sys.argv[4]
+        hdfs_target_dir = sys.argv[5]
+        compression = sys.argv[6]
+        drop = sys.argv[7]
+        landing_zone.run(local_dir, hdfs_target_dir, compression, drop)
+        end = time.time()
+        print(f"Landing zone process completed in {end - start} seconds")
+        sys.exit(0)
 
