@@ -12,7 +12,7 @@ class has the following methods:
 
 ### LandingZone.run(local_dir, hdfs_target_dir): 
     Run the full data landing zone process
-### LandingZone.nuke(hdfs_target_dir):
+### LandingZone.drop(hdfs_target_dir):
     Delete all files in a given HDFS directory
 
 Additionally, the LandingZone class initializes the DataCollector and DataPersistenceLoader class which are defined below.
