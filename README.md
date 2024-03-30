@@ -43,7 +43,7 @@ is used to persist data in HDFS to Parquet files. The `DataPersistenceLoader` cl
     Convert JSON file to Parquet file and save to HDFS
 
 # How to run the project
-Run the whole landing zone pipe (for data folder) using cmd with the following command:
+Run the whole landing zone pipe (for data folder) using terminal with the following command:
 ```python landing_zone.py url user execute local_dir hdfs_target_dir compression_type drop_temporal_dir```
 
 Run upload_folder command using cmd with the following command:
