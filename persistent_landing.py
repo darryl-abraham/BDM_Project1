@@ -17,12 +17,15 @@ class DataPersistenceLoader:
         """
         Persist data from source directory to target directory in HDFS
         :param temp_data_dir_hdfs: source directory (temporal data directory)
+        :param root_dir: root directory of persistence to maintain directory structure
         :param compression: compression type for Parquet files
+        :param drop: "boolean" to drop source directory after persistence
         :return: None
         """
         start = time.time()
         if root_dir is None:
-            root_dir = temp_data_dir_hdfs
+            parts = temp_data_dir_hdfs.split('/')
+            root_dir = '/'.join(parts[:2])
         if compression == 'None' or compression == 'none' or compression == 'n':
             compression = None
         json_keys, csv_keys = self.get_keys(temp_data_dir_hdfs)
@@ -33,6 +36,9 @@ class DataPersistenceLoader:
                 self.persist(f'{temp_data_dir_hdfs}/{item}', root_dir=root_dir)
         if drop == 'True' or drop == 'true' or drop == 't':
             self.drop(temp_data_dir_hdfs)
+        if drop == 'False' or drop == 'false' or drop == 'f':
+            self.client.rename(root_dir, root_dir + "_temporal")
+            print(f"{root_dir} renamed to {root_dir}_temporal")
         end = time.time()
         print(f"{temp_data_dir_hdfs} data persistence completed in {end-start} seconds")
 
@@ -42,6 +48,7 @@ class DataPersistenceLoader:
         :param hdfs_dir: source directory
         :param keys: keys to be included in the Parquet file
         :param compression: compression type for Parquet files
+        :param root_dir: root directory for data persistence
         :return: None
         """
         hdfs_target_dir = (root_dir.replace(root_dir.split('/')[-1], root_dir.split('/')[-1] + "_persistent")

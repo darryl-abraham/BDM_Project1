@@ -19,18 +19,18 @@ class LandingZone:
         self.data_collector = DataCollector(self.client)
         self.data_persistor = DataPersistenceLoader(self.client)
 
-    def run(self, local_dir, temp_data_dir, compression=None, drop=False):
+    def execute(self, local_dir, temp_data_dir, compression=None, drop=False):
         """
         Run full data landing zone process
         :param local_dir: local directory to upload to HDFS
-        :param hdfs_target_dir: target directory in HDFS
+        :param temp_data_dir: target directory to upload temporal data in HDFS
+        :param compression: compression type for Parquet files
+        :param drop: "boolean" to drop temporal directory (temp_data_dir) after persisting data
         :return:
         """
         self.data_collector.upload_folder(local_dir, temp_data_dir)
         self.data_persistor.persist(temp_data_dir, compression=compression, drop=drop)
-        if drop == 'False' or drop == 'false' or drop == 'f':
-            landing_zone.client.rename(temp_data_dir, temp_data_dir + "_temporal")
-            print(f"{temp_data_dir} renamed to {temp_data_dir}_temporal")
+
 
 if __name__ == '__main__':
     start = time.time()
@@ -53,13 +53,13 @@ if __name__ == '__main__':
         dir = sys.argv[4]
         compression = sys.argv[5]
         drop = sys.argv[6]
-        landing_zone.data_persistor.persist(dir, compression, drop)
+        landing_zone.data_persistor.persist(dir, compression=compression, drop=drop)
     elif sys.argv[3] == 'execute':
         local_dir = sys.argv[4]
         temp_data_dir = sys.argv[5]
         compression = sys.argv[6]
         drop = sys.argv[7]
-        landing_zone.run(local_dir, temp_data_dir, compression, drop)
+        landing_zone.execute(local_dir, temp_data_dir, compression, drop)
         end = time.time()
         print(f"Landing zone process completed in {end - start} seconds")
         sys.exit(0)
