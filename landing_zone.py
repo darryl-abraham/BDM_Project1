@@ -1,5 +1,4 @@
 import os.path
-
 from temporal_landing import DataCollector
 from persistent_landing import DataPersistenceLoader
 from hdfs import InsecureClient
