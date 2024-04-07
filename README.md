@@ -65,4 +65,4 @@ The arguments are:
 - drop_temporal_dir: whether to drop the temporal landing directory after persisting the data
   - Options: 't' (true), 'f' (false)
 
-***NOTE: PLEASE RUN DROP COMMAND: python landing_zone.py http://10.4.41.45:9870 bdm /user/bdm BEFORE RUNNING TO ENSURE A CLEAN PIPE.***
+***NOTE: PLEASE RUN DROP COMMAND, "python landing_zone.py http://10.4.41.45:9870 bdm /user/bdm", BEFORE RUNNING TO ENSURE A CLEAN PIPE***
