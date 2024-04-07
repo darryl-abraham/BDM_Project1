@@ -141,7 +141,7 @@ class DataPersistenceLoader:
         :param hdfs_target_dir: directory to delete
         :return: None
         """
-        if hdfs_target_dir == 'nuke':
+        if hdfs_target_dir == 'nuke' or hdfs_target_dir == '/user/bdm':
             self.client.delete('/user/bdm', recursive=True)
             self.client.makedirs('/user/bdm')
             print(f"Directory /user/bdm deleted")
