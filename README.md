@@ -56,10 +56,10 @@ Run drop command using cmd with the following command:
 ```python landing_zone.py url user drop hdfs_target_dir```
 
 The arguments are:
-- url: the URL of the HDFS namenode
-- user: the user to connect to HDFS
-- local_dir: the local directory where the data is stored
-- hdfs_target_dir: the HDFS directory where the data will be stored (temporal landing)
+- url: the URL of the HDFS namenode (http://10.4.41.45:9870)
+- user: the user to connect to HDFS (bdm)
+- local_dir: the local directory where the data is stored (./data)
+- hdfs_target_dir: the HDFS directory where the data will be stored; temporal landing (./data)
 - compression_type: the Parquet compression type to use when persisting the data
   - Compression types: 'n' (no compression), 'snappy' (optimal for speed and size), 'gzip' (size optimal), 'brotli', 'lz4', 'zstd'
 - drop_temporal_dir: whether to drop the temporal landing directory after persisting the data
